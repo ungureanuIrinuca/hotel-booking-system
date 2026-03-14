@@ -2,13 +2,19 @@ package com.team.hotelbooking.entities;
 
 import com.team.hotelbooking.additional.RoomType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 
 @Entity
-@Table
+@Table(name = "rooms")
+@NoArgsConstructor
+@Getter
+@Setter
 public class Room {
     @Id
     @SequenceGenerator(
@@ -21,14 +27,19 @@ public class Room {
             generator = "room_sequence"
     )
     private Long id;
+
     private String roomNumber;
 
     @ManyToOne
     @JoinColumn(name = "host_id")
     private User host;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RoomType roomType;
+
     private BigDecimal pricePerNight;
+
     private int capacity;
 
     @ElementCollection
@@ -44,64 +55,4 @@ public class Room {
         this.capacity = capacity;
         this.roomFeatures = roomFeatures;
     }
-
-    public Room() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRoomNumber() {
-        return roomNumber;
-    }
-
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-
-    public User getHost() {
-        return host;
-    }
-
-    public void setHost(User host) {
-        this.host = host;
-    }
-
-    public RoomType getRoomType() {
-        return roomType;
-    }
-
-    public void setRoomType(RoomType roomType) {
-        this.roomType = roomType;
-    }
-
-    public BigDecimal getPricePerNight() {
-        return pricePerNight;
-    }
-
-    public void setPricePerNight(BigDecimal pricePerNight) {
-        this.pricePerNight = pricePerNight;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public List<String> getRoomFeatures() {
-        return roomFeatures;
-    }
-
-    public void setRoomFeatures(List<String> roomFeatures) {
-        this.roomFeatures = roomFeatures;
-    }
-
 }

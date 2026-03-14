@@ -2,10 +2,17 @@ package com.team.hotelbooking.entities;
 
 import com.team.hotelbooking.additional.BookingStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "bookings")
+@NoArgsConstructor
+@Getter
+@Setter
 public class Booking {
 
     @Id
@@ -46,56 +53,4 @@ public class Booking {
         this.room = room;
         this.status = status;
     }
-
-    public Booking() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public User getGuest() {
-        return guest;
-    }
-
-    public void setGuest(User guest) {
-        this.guest = guest;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    public BookingStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(BookingStatus status) {
-        this.status = status;
-    }
-
 }
