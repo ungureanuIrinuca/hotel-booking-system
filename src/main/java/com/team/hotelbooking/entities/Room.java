@@ -1,42 +1,58 @@
 package com.team.hotelbooking.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.team.hotelbooking.additional.RoomType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
 @Entity
+@Table(name = "rooms")
+@NoArgsConstructor
+@Getter
+@Setter
 public class Room {
     @Id
-    @GeneratedValue
+    @SequenceGenerator(
+            name = "room_sequence",
+            sequenceName = "room_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "room_sequence"
+    )
     private Long id;
-    private Long hostId;
 
-    private int roomNumber;
+    private String roomNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "host_id")
+    private User host;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RoomType roomType;
+
+    private BigDecimal pricePerNight;
+
     private int capacity;
-    private int pricePerNight;
+
+    @ElementCollection
+    @CollectionTable(name = "room_features", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "feature")
     private List<String> roomFeatures;
 
-    @Override
-    public String toString() {
-        return "Room{" +
-                "id=" + id +
-                ", hostId=" + hostId +
-                ", roomNumber=" + roomNumber +
-                ", roomType=" + roomType +
-                ", capacity=" + capacity +
-                ", pricePerNight=" + pricePerNight +
-                ", roomFeatures=" + roomFeatures +
-                '}';
+    public Room(String roomNumber, User host, RoomType roomType, BigDecimal pricePerNight, int capacity, List<String> roomFeatures) {
+        this.roomNumber = roomNumber;
+        this.host = host;
+        this.roomType = roomType;
+        this.pricePerNight = pricePerNight;
+        this.capacity = capacity;
+        this.roomFeatures = roomFeatures;
     }
 }
