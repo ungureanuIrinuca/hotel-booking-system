@@ -37,7 +37,7 @@ public class RoomService {
         Room RoomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
 
-        RoomEntity.setHostId(roomDTO.hostId());
+        RoomEntity.setHost(roomDTO.Host());
         RoomEntity.setRoomNumber(roomDTO.roomNumber());
         RoomEntity.setRoomType(roomDTO.roomType());
         RoomEntity.setCapacity(roomDTO.capacity());

@@ -1,23 +1,24 @@
 package com.team.hotelbooking.dtos;
 
 import com.team.hotelbooking.entities.Room;
-import com.team.hotelbooking.entities.RoomType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.team.hotelbooking.additional.RoomType;
+import com.team.hotelbooking.entities.User;
 
+
+import java.math.BigDecimal;
 import java.util.List;
 
 public record RoomDTO(
-        Long hostId,
-        int roomNumber,
+        User Host,
+        String roomNumber,
         RoomType roomType,
         int capacity,
-        int pricePerNight,
+        BigDecimal pricePerNight,
         List<String> roomFeatures
 ) {
     public static RoomDTO fromEntity(Room room){
         return new RoomDTO(
-                room.getHostId(),
+                room.getHost(),
                 room.getRoomNumber(),
                 room.getRoomType(),
                 room.getCapacity(),
@@ -28,7 +29,7 @@ public record RoomDTO(
 
     public Room toEntity() {
         Room room = new Room();
-        room.setHostId(this.hostId);
+        room.setHost(this.Host);
         room.setRoomNumber(this.roomNumber);
         room.setRoomType(this.roomType);
         room.setCapacity(this.capacity);
