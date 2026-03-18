@@ -4,9 +4,11 @@ import com.team.hotelbooking.dtos.BookingRequestDTO;
 import com.team.hotelbooking.dtos.BookingResponseDTO;
 import com.team.hotelbooking.model.Booking;
 import com.team.hotelbooking.service.BookingService;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,7 +30,7 @@ public class BookingController {
     @PutMapping("/{id}/cancel")
     public ResponseEntity<String> cancelBooking(@PathVariable Long id) {
         bookingService.cancelBooking(id);
-        return ResponseEntity.ok("Rezervarea cu ID-ul " + id + " a fost anulată cu succes.");
+        return ResponseEntity.ok("Booking with id " + id + " was successfully canceled.");
     }
 
     @GetMapping("/guest/{guestId}")
@@ -47,5 +49,14 @@ public class BookingController {
     public ResponseEntity<List<BookingResponseDTO>> getUpcomingBookings() {
         List<BookingResponseDTO> upcoming = bookingService.getUpcomingBookings();
         return ResponseEntity.ok(upcoming);
+    }
+
+    @GetMapping("/available/{startDate}/{endDate}")
+    public ResponseEntity<List<Long>> getAvailableRoomsByDate(
+            @PathVariable LocalDate startDate,
+            @PathVariable LocalDate endDate
+    ){
+        List<Long> roomIds = bookingService.getAvailableRooms(startDate,endDate);
+        return ResponseEntity.ok(roomIds);
     }
 }

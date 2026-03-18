@@ -23,14 +23,10 @@ public class BookingService {
         LocalDate startDate = request.getStartDate();
         LocalDate endDate = request.getEndDate();
 
-        if (!startDate.isBefore(endDate))
-            throw new RuntimeException("Invalid date interval.");
-
-        if (startDate.isBefore(LocalDate.now()))
-            throw new RuntimeException("Booking cannot start in the past.");
+        validateDates(startDate, endDate);
 
         if (!checkAvailability(roomId, startDate, endDate))
-            throw new RuntimeException("Room not available.");
+            throw new IllegalArgumentException("Room with id " + roomId + " is not available.");
 
         Booking booking = new Booking();
         booking.setStartDate(startDate);
@@ -63,7 +59,17 @@ public class BookingService {
 
     }
 
+    public List<Long> getAvailableRooms(LocalDate startDate, LocalDate endDate) {
+
+        List<Long> roomIds = bookingRepository.findDistinctRoomIds();
+        return roomIds.stream()
+                .filter(roomId -> checkAvailability(roomId, startDate, endDate))
+                .toList();
+
+    }
+
     public void cancelBooking(Long id) {
+
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking with id " + id + " does not exist."));
 
@@ -102,6 +108,14 @@ public class BookingService {
         responseDto.setStatus(booking.getStatus());
 
         return responseDto;
+    }
+
+    private void validateDates(LocalDate startDate, LocalDate endDate) {
+        if (!startDate.isBefore(endDate))
+            throw new IllegalArgumentException("Invalid date interval.");
+
+        if (startDate.isBefore(LocalDate.now()))
+            throw new IllegalArgumentException("Booking cannot start in the past.");
     }
 
 }
