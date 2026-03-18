@@ -1,5 +1,6 @@
 package com.team.hotelbooking.services;
 
+import com.team.hotelbooking.additional.RoomType;
 import com.team.hotelbooking.dtos.RoomDTO;
 import com.team.hotelbooking.entities.Room;
 import com.team.hotelbooking.repositories.RoomRepository;
@@ -17,7 +18,11 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
 
-    public List<Room> getRooms() {
+    public List<Room> getRooms(RoomType roomType) {
+        if (roomType != null) {
+            return roomRepository.findByRoomType(roomType);
+        }
+
         return roomRepository.findAll();
     }
 
