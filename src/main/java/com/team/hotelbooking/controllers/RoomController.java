@@ -1,6 +1,7 @@
 package com.team.hotelbooking.controllers;
 
 
+import com.team.hotelbooking.additional.RoomType;
 import com.team.hotelbooking.dtos.RoomDTO;
 import com.team.hotelbooking.entities.Room;
 import com.team.hotelbooking.services.RoomService;
@@ -21,8 +22,8 @@ public class RoomController {
 
 
     @GetMapping
-    public List<Room> getRooms() {
-        return roomService.getRooms();
+    public List<Room> getRooms(@RequestParam(required = false) RoomType roomType) {
+        return roomService.getRooms(roomType);
     }
 
     @GetMapping("/{id}")
