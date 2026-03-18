@@ -34,6 +34,8 @@ public class RoomController {
     public void registerNewRoom(@RequestBody RoomDTO RoomDTO) {
         roomService.addRoom(RoomDTO);
     }
+
+
     @PutMapping("/{id}")
     public void updateRoom(@PathVariable Long id, @RequestBody RoomDTO RoomDTO){
         roomService.updateRoom(id, RoomDTO);
