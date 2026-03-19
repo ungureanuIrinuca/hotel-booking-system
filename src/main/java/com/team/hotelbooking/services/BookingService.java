@@ -1,9 +1,9 @@
-package com.team.hotelbooking.service;
+package com.team.hotelbooking.services;
 
 import com.team.hotelbooking.dtos.BookingRequestDTO;
 import com.team.hotelbooking.dtos.BookingResponseDTO;
 import com.team.hotelbooking.model.Booking;
-import com.team.hotelbooking.repository.BookingRepository;
+import com.team.hotelbooking.repositories.BookingRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

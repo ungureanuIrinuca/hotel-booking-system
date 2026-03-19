@@ -1,10 +1,9 @@
-package com.team.hotelbooking.controller;
+package com.team.hotelbooking.controllers;
 
 import com.team.hotelbooking.dtos.BookingRequestDTO;
 import com.team.hotelbooking.dtos.BookingResponseDTO;
 import com.team.hotelbooking.model.Booking;
-import com.team.hotelbooking.service.BookingService;
-import org.springframework.cglib.core.Local;
+import com.team.hotelbooking.services.BookingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
