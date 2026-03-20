@@ -2,7 +2,7 @@ package com.team.hotelbooking.controllers;
 
 import com.team.hotelbooking.dtos.BookingRequestDTO;
 import com.team.hotelbooking.dtos.BookingResponseDTO;
-import com.team.hotelbooking.model.Booking;
+import com.team.hotelbooking.entities.Booking;
 import com.team.hotelbooking.services.BookingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,16 +33,16 @@ public class BookingController {
     }
 
     @GetMapping("/guest/{guestId}")
-    public ResponseEntity<List<Booking>> getGuestBookings(@PathVariable Long guestId) {
-        List<Booking> userBookings = bookingService.getByGuest(guestId);
-        return ResponseEntity.ok(userBookings);
-    }
+    public ResponseEntity<List<BookingResponseDTO>> getGuestBookings(@PathVariable Long guestId) {
 
-    @GetMapping("/host/{hostId}")
-    public ResponseEntity<List<Booking>> getHostBookings(@PathVariable Long hostId) {
-        List<Booking> hostBookings = bookingService.getByHost(hostId);
-        return ResponseEntity.ok(hostBookings);
+        List<BookingResponseDTO> bookings = bookingService.getByGuest(guestId);
+        return ResponseEntity.ok(bookings);
     }
+//    @GetMapping("/host/{hostId}")
+//    public ResponseEntity<List<Booking>> getHostBookings(@PathVariable Long hostId) {
+//        List<Booking> hostBookings = bookingService.getByHost(hostId);
+//        return ResponseEntity.ok(hostBookings);
+//    }
 
     @GetMapping("/upcoming")
     public ResponseEntity<List<BookingResponseDTO>> getUpcomingBookings() {
@@ -54,8 +54,8 @@ public class BookingController {
     public ResponseEntity<List<Long>> getAvailableRoomsByDate(
             @PathVariable LocalDate startDate,
             @PathVariable LocalDate endDate
-    ){
-        List<Long> roomIds = bookingService.getAvailableRooms(startDate,endDate);
+    ) {
+        List<Long> roomIds = bookingService.getAvailableRooms(startDate, endDate);
         return ResponseEntity.ok(roomIds);
     }
 }

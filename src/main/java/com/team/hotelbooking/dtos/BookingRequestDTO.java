@@ -8,7 +8,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class BookingRequestDTO {
-    private Long hostId;
     private Long guestId;
     private Long roomId;
     private LocalDate startDate;

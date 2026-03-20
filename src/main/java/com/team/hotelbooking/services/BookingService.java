@@ -1,9 +1,14 @@
 package com.team.hotelbooking.services;
 
+import com.team.hotelbooking.additional.BookingStatus;
 import com.team.hotelbooking.dtos.BookingRequestDTO;
 import com.team.hotelbooking.dtos.BookingResponseDTO;
-import com.team.hotelbooking.model.Booking;
+import com.team.hotelbooking.entities.Booking;
+import com.team.hotelbooking.entities.Room;
+import com.team.hotelbooking.entities.User;
 import com.team.hotelbooking.repositories.BookingRepository;
+import com.team.hotelbooking.repositories.RoomRepository;
+import com.team.hotelbooking.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,9 +18,14 @@ import java.util.List;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
 
-    public BookingService(BookingRepository bookingRepository) {
+    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, RoomRepository roomRepository) {
         this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
+        this.roomRepository = roomRepository;
+
     }
 
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
@@ -28,18 +38,20 @@ public class BookingService {
         if (!checkAvailability(roomId, startDate, endDate))
             throw new IllegalArgumentException("Room with id " + roomId + " is not available.");
 
+        User guest;
+        guest = userRepository.findById(request.getGuestId()).orElseThrow();
+        Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
+
         Booking booking = new Booking();
+        booking.setGuest(guest);
+        booking.setRoom(room);
         booking.setStartDate(startDate);
         booking.setEndDate(endDate);
-        booking.setRoomId(roomId);
 
-        booking.setGuestId(request.getGuestId());
-        booking.setHostId(request.getHostId());
-
-        booking.setStatus(Booking.BookingStatus.ACTIVE);
+        booking.setStatus(BookingStatus.ACTIVE);
 
         Booking saved = bookingRepository.save(booking);
-        return mapToResponse(saved);
+        return BookingResponseDTO.mapToDTO(saved);
     }
 
     private boolean checkAvailability(Long roomId, LocalDate startDate, LocalDate endDate) {
@@ -51,7 +63,7 @@ public class BookingService {
                     startDate.isBefore(b.getEndDate()) &&
                             endDate.isAfter(b.getStartDate());
 
-            if (overlap && b.getStatus() == Booking.BookingStatus.ACTIVE)
+            if (overlap && b.getStatus() == BookingStatus.ACTIVE)
                 return false;
         }
         return true;
@@ -66,6 +78,8 @@ public class BookingService {
                 .filter(roomId -> checkAvailability(roomId, startDate, endDate))
                 .toList();
 
+
+
     }
 
     public void cancelBooking(Long id) {
@@ -73,19 +87,22 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking with id " + id + " does not exist."));
 
-        booking.setStatus(Booking.BookingStatus.CANCELLED);
+        booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
 
     }
 
-    public List<Booking> getByGuest(Long guestId) {
-        return bookingRepository.findByGuestId(guestId);
+    public List<BookingResponseDTO> getByGuest(Long guestId) {
+        return bookingRepository.findByGuestId(guestId)
+                .stream()
+                .map(BookingResponseDTO::mapToDTO)
+                .toList();
     }
 
-    public List<Booking> getByHost(Long hostId) {
-        return bookingRepository.findByHostId(hostId);
-    }
+//    public List<Booking> getByHost(Long hostId) {
+//        return bookingRepository.findByHostId(hostId);
+//    }
 
 
     public List<BookingResponseDTO> getUpcomingBookings() {
@@ -93,22 +110,10 @@ public class BookingService {
         List<Booking> bookings = bookingRepository.findByStartDateAfter(LocalDate.now());
 
         return bookings.stream()
-                .map(this::mapToResponse)
+                .map(BookingResponseDTO::mapToDTO)
                 .toList();
     }
 
-    private BookingResponseDTO mapToResponse(Booking booking) {
-        BookingResponseDTO responseDto = new BookingResponseDTO();
-        responseDto.setId(booking.getId());
-        responseDto.setGuestId(booking.getGuestId());
-        responseDto.setHostId(booking.getHostId());
-        responseDto.setRoomId(booking.getRoomId());
-        responseDto.setStartDate(booking.getStartDate());
-        responseDto.setEndDate(booking.getEndDate());
-        responseDto.setStatus(booking.getStatus());
-
-        return responseDto;
-    }
 
     private void validateDates(LocalDate startDate, LocalDate endDate) {
         if (!startDate.isBefore(endDate))
