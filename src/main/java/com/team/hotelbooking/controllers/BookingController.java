@@ -39,8 +39,8 @@ public class BookingController {
         return ResponseEntity.ok(bookings);
     }
     @GetMapping("/host/{hostId}")
-    public ResponseEntity<List<Booking>> getHostBookings(@PathVariable Long hostId) {
-        List<Booking> hostBookings = bookingService.getByHost(hostId);
+    public ResponseEntity<List<BookingResponseDTO>> getHostBookings(@PathVariable Long hostId) {
+        List<BookingResponseDTO> hostBookings = bookingService.getByHost(hostId);
         return ResponseEntity.ok(hostBookings);
     }
 

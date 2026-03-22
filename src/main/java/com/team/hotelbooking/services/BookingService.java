@@ -79,7 +79,6 @@ public class BookingService {
                 .toList();
 
 
-
     }
 
     public void cancelBooking(Long id) {
@@ -100,8 +99,13 @@ public class BookingService {
                 .toList();
     }
 
-    public List<Booking> getByHost(Long hostId) {
-        return bookingRepository.findByRoom_Host_Id(hostId);
+    public List<BookingResponseDTO> getByHost(Long hostId) {
+
+        List<Booking> bookings = bookingRepository.findByRoom_Host_Id(hostId);
+        return bookings.stream()
+                .map(BookingResponseDTO::mapToDTO)
+                .toList();
+
     }
 
 
