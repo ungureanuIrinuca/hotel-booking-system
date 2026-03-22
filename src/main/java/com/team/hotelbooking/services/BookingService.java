@@ -100,9 +100,9 @@ public class BookingService {
                 .toList();
     }
 
-//    public List<Booking> getByHost(Long hostId) {
-//        return bookingRepository.findByHostId(hostId);
-//    }
+    public List<Booking> getByHost(Long hostId) {
+        return bookingRepository.findByRoom_Host_Id(hostId);
+    }
 
 
     public List<BookingResponseDTO> getUpcomingBookings() {
