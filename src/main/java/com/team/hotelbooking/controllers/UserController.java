@@ -23,8 +23,7 @@ public class UserController {
     }
     @PatchMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@RequestBody UserRequestDTO u,
-                                        @PathVariable Long id)
-    {
+                                        @PathVariable Long id) throws Exception {
         return new ResponseEntity<>(service.updateUser(id, u), HttpStatus.OK);
     }
     @GetMapping("/{id}")
