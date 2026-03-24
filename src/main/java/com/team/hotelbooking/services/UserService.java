@@ -69,7 +69,7 @@ public class UserService {
         else
             throw new RuntimeException("Invalid Credentials");
     }
-    @PreAuthorize("@security.isAdmin() or security.getAuthId()==#id")
+    @PreAuthorize("@security.isAdmin() or @security.getAuthId()==#id")
     public UserResponseDTO updateUser(Long id,UserRequestDTO d) throws Exception {
         if (UserType.valueOf(d.userType()) == UserType.ADMIN)
         {
@@ -121,7 +121,7 @@ public class UserService {
         List<User> l=repository.findAll();
         return l.stream().map(UserResponseDTO::basicInfo).collect(Collectors.toCollection(ArrayList::new));
     }
-    @PreAuthorize("@security.isAdmin() or security.getAuthId()==#id")
+    @PreAuthorize("@security.isAdmin() or @security.getAuthId()==#id")
     public UserResponseDTO deleteUser(Long id)
     {
         Optional<User> u=repository.findById(id);

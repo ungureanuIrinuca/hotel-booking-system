@@ -85,7 +85,7 @@ public class BookingService {
 
 
     }
-    @PreAuthorize("@security.isBookingHost(#id) or security.isBookingGuest(#id)")
+    @PreAuthorize("@security.isBookingHost(#id) or @security.isBookingGuest(#id)")
     public void cancelBooking(Long id) {
 
         Booking booking = bookingRepository.findById(id)
@@ -97,7 +97,7 @@ public class BookingService {
 
     }
 
-    @PreAuthorize("@security.getAuthId()==#guestId or security.isAdmin()")
+    @PreAuthorize("@security.getAuthId()==#guestId or @security.isAdmin()")
     public List<BookingResponseDTO> getByGuest(Long guestId) {
         return bookingRepository.findByGuestId(guestId)
                 .stream()
@@ -105,7 +105,7 @@ public class BookingService {
                 .toList();
     }
 
-    @PreAuthorize("@security.getAuthId()==#hostId or security.isAdmin()")
+    @PreAuthorize("@security.getAuthId()==#hostId or @security.isAdmin()")
     public List<BookingResponseDTO> getByHost(Long hostId) {
 
         List<Booking> bookings = bookingRepository.findByRoom_Host_Id(hostId);
