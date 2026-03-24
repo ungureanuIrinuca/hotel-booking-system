@@ -69,7 +69,7 @@ public class UserService {
         else
             throw new RuntimeException("Invalid Credentials");
     }
-    @PreAuthorize("security.isAdmin() or security.getAuthId()==#id")
+    @PreAuthorize("@security.isAdmin() or security.getAuthId()==#id")
     public UserResponseDTO updateUser(Long id,UserRequestDTO d) throws Exception {
         if (UserType.valueOf(d.userType()) == UserType.ADMIN)
         {
@@ -99,7 +99,7 @@ public class UserService {
             throw new RuntimeException("id not found");
         }
     }
-    @PreAuthorize("@security.canSeeUSer(#id)")
+    @PreAuthorize("@security.canSeeUser(#id)")
     public UserResponseDTO getUser(Long id)
     {
         Optional<User> u=repository.findById(id);
@@ -115,13 +115,13 @@ public class UserService {
             throw new RuntimeException("id not found");
         }
     }
-    @PostFilter("@security.canSeeUSer(filterObject.id())")
-    public Object[] getAllUsers()
+    @PostFilter("@security.canSeeUser(filterObject.id())")
+    public List<UserResponseDTO> getAllUsers()
     {
         List<User> l=repository.findAll();
-        return new ArrayList[]{l.stream().map(UserResponseDTO::basicInfo).collect(Collectors.toCollection(ArrayList::new))};
+        return l.stream().map(UserResponseDTO::basicInfo).collect(Collectors.toCollection(ArrayList::new));
     }
-    @PreAuthorize("security.isAdmin() or security.getAuthId()==#id")
+    @PreAuthorize("@security.isAdmin() or security.getAuthId()==#id")
     public UserResponseDTO deleteUser(Long id)
     {
         Optional<User> u=repository.findById(id);

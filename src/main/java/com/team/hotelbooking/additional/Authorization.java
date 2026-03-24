@@ -20,11 +20,8 @@ public class Authorization {
     RoomRepository roomRepository;
     public boolean isAdmin()
     {
-        return SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getAuthorities()
-                .stream()
-                .anyMatch(a->a.getAuthority().equals("ROLE_ADMIN"));
+        Jwt loginToken = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return loginToken.getClaim("user_type").equals("ADMIN");
     }
 
     public long getAuthId()
@@ -53,7 +50,7 @@ public class Authorization {
 
     public boolean canSeeUser(long user_id)
     {
-        return getAuthId()==user_id || isAdmin() || isGuestForUser(user_id) || isHostForUSer(user_id);
+        return (getAuthId()==user_id || isAdmin() || isGuestForUser(user_id) || isHostForUSer(user_id));
     }
 
     public boolean ownsRoom(long room_id)
@@ -83,6 +80,6 @@ public class Authorization {
 
     public boolean canSeeBooking(long booking_id)
     {
-        return isAdmin() || isBookingGuest(booking_id) || isBookingHost(booking_id);
+        return (isAdmin() || isBookingGuest(booking_id) || isBookingHost(booking_id));
     }
 }

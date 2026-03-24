@@ -34,12 +34,12 @@ public class RoomService {
 
     }
 
-    @PreAuthorize("security.getAuthId()==#roomDTO.getHost().getId()")
+    @PreAuthorize("@security.getAuthId()==#roomDTO.getHost().getId()")
     public void addRoom(RoomDTO roomDTO) {
         Room roomEntity = roomDTO.toEntity();
         roomRepository.save(roomEntity);
     }
-    @PreAuthorize("security.ownsRoom(#id)")
+    @PreAuthorize("@security.ownsRoom(#id)")
     public void updateRoom(Long id, RoomDTO roomDTO) {
         Room RoomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
@@ -55,7 +55,7 @@ public class RoomService {
 
 
     }
-    @PreAuthorize("security.ownsRoom(#id)")
+    @PreAuthorize("@security.ownsRoom(#id)")
     public void deleteRoom(Long id) {
         Room RoomById = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
