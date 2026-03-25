@@ -12,10 +12,14 @@ import com.team.hotelbooking.exceptions.NotFoundException;
 import com.team.hotelbooking.repositories.BookingRepository;
 import com.team.hotelbooking.repositories.RoomRepository;
 import com.team.hotelbooking.repositories.UserRepository;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -31,6 +35,7 @@ public class BookingService {
 
     }
 
+    @PreAuthorize("@security.getAuthId()==#request.getGuestId()")
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
         Long roomId = request.getRoomId();
         LocalDate startDate = request.getStartDate();
@@ -83,7 +88,7 @@ public class BookingService {
 
 
     }
-
+    @PreAuthorize("@security.isBookingHost(#id) or @security.isBookingGuest(#id)")
     public void cancelBooking(Long id) {
 
         Booking booking = bookingRepository.findById(id)
@@ -95,6 +100,7 @@ public class BookingService {
 
     }
 
+    @PreAuthorize("@security.getAuthId()==#guestId or @security.isAdmin()")
     public List<BookingResponseDTO> getByGuest(Long guestId) {
         return bookingRepository.findByGuestId(guestId)
                 .stream()
@@ -102,6 +108,7 @@ public class BookingService {
                 .toList();
     }
 
+    @PreAuthorize("@security.getAuthId()==#hostId or @security.isAdmin()")
     public List<BookingResponseDTO> getByHost(Long hostId) {
 
         List<Booking> bookings = bookingRepository.findByRoom_Host_Id(hostId);
@@ -111,14 +118,14 @@ public class BookingService {
 
     }
 
-
+    @PostFilter("@security.canSeeBooking(filterObject.getId())")
     public List<BookingResponseDTO> getUpcomingBookings() {
 
         List<Booking> bookings = bookingRepository.findByStartDateAfter(LocalDate.now());
 
         return bookings.stream()
                 .map(BookingResponseDTO::mapToDTO)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
 

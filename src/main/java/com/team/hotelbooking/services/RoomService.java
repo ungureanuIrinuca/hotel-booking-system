@@ -6,6 +6,7 @@ import com.team.hotelbooking.entities.Room;
 import com.team.hotelbooking.exceptions.NotFoundException;
 import com.team.hotelbooking.repositories.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,11 +35,12 @@ public class RoomService {
 
     }
 
+    @PreAuthorize("@security.getAuthId()==#roomDTO.getHost().getId()")
     public void addRoom(RoomDTO roomDTO) {
         Room roomEntity = roomDTO.toEntity();
         roomRepository.save(roomEntity);
     }
-
+    @PreAuthorize("@security.ownsRoom(#id)")
     public void updateRoom(Long id, RoomDTO roomDTO) {
         Room RoomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Room with id " + id + " not found"));
@@ -54,7 +56,7 @@ public class RoomService {
 
 
     }
-
+    @PreAuthorize("@security.ownsRoom(#id)")
     public void deleteRoom(Long id) {
         Room RoomById = roomRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Room with id " + id + " not found"));

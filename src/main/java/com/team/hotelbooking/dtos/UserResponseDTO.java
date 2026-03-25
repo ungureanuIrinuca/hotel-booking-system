@@ -17,8 +17,7 @@ public record UserResponseDTO (
         Long id,
         UserType type,
         List<Long> room_ids,
-        List<Long> own_booking_ids,
-        List<Long> hosted_booking_ids
+        List<Long> own_booking_ids
     )
 {
     public static UserResponseDTO basicInfo(User u){
@@ -28,7 +27,6 @@ public record UserResponseDTO (
                 u.getEmail(),
                 u.getId(),
                 u.getUserType(),
-                null,
                 null,
                 null
         );
@@ -40,7 +38,6 @@ public record UserResponseDTO (
                                         .map(Booking::getId)
                                         .toList();
         List<Long> room_ids;
-        List<Long> hosted_booking_ids;
         if (u.getUserType()== UserType.HOST)
         {
             room_ids = u.getRooms()
@@ -48,17 +45,9 @@ public record UserResponseDTO (
                     .filter(r-> Objects.equals(r.getHost().getId(), u.getId()))
                     .map(Room::getId)
                     .toList();
-
-            hosted_booking_ids = u.getBookings()
-                    .stream()
-                    .filter(b ->room_ids.contains(b.getRoom().getId()))
-                    .map(Booking::getId)
-                    .toList();
         } else {
             room_ids = null;
-            hosted_booking_ids = null;
         }
-
         return new UserResponseDTO(
                 u.getName(),
                 u.getUsername(),
@@ -66,8 +55,7 @@ public record UserResponseDTO (
                 u.getId(),
                 u.getUserType(),
                 room_ids,
-                own_booking_ids,
-                hosted_booking_ids
+                own_booking_ids
         );
     }
 }

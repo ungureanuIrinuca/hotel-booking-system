@@ -11,6 +11,8 @@ import com.team.hotelbooking.exceptions.UnauthorizedException;
 import com.team.hotelbooking.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -68,9 +72,14 @@ public class UserService {
         else
             throw new UnauthorizedException("Invalid Credentials");
     }
-
-    public UserResponseDTO updateUser(Long id,UserRequestDTO d)
-    {
+    @PreAuthorize("@security.isAdmin() or @security.getAuthId()==#id")
+    public UserResponseDTO updateUser(Long id,UserRequestDTO d) throws Exception {
+        if (UserType.valueOf(d.userType()) == UserType.ADMIN)
+        {
+            Jwt loginToken = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (!loginToken.getClaim("user_type").equals("ADMIN"))
+                throw new Exception("You cannot enroll yourself as admin!");
+        }
         Optional<User> u=repository.findById(id);
         if (u.isPresent())
         {
@@ -93,6 +102,7 @@ public class UserService {
             throw new NotFoundException("User with id "+id+" not found!");
         }
     }
+    @PreAuthorize("@security.canSeeUser(#id)")
     public UserResponseDTO getUser(Long id)
     {
         Optional<User> u=repository.findById(id);
@@ -108,13 +118,13 @@ public class UserService {
             throw new NotFoundException("User with id "+id+" not found!");
         }
     }
+    @PostFilter("@security.canSeeUser(filterObject.id())")
     public List<UserResponseDTO> getAllUsers()
     {
         List<User> l=repository.findAll();
-        return l.stream().map(UserResponseDTO::basicInfo).toList();
+        return l.stream().map(UserResponseDTO::basicInfo).collect(Collectors.toCollection(ArrayList::new));
     }
-
-
+    @PreAuthorize("@security.isAdmin() or @security.getAuthId()==#id")
     public UserResponseDTO deleteUser(Long id)
     {
         Optional<User> u=repository.findById(id);
