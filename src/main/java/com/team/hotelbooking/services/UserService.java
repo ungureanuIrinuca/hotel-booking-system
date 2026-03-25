@@ -5,6 +5,9 @@ import com.team.hotelbooking.dtos.LoginRequestDTO;
 import com.team.hotelbooking.dtos.UserRequestDTO;
 import com.team.hotelbooking.dtos.UserResponseDTO;
 import com.team.hotelbooking.entities.User;
+import com.team.hotelbooking.exceptions.ForbiddenException;
+import com.team.hotelbooking.exceptions.NotFoundException;
+import com.team.hotelbooking.exceptions.UnauthorizedException;
 import com.team.hotelbooking.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -36,7 +39,7 @@ public class UserService {
         {
             Jwt loginToken = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!loginToken.getClaim("user_type").equals("ADMIN"))
-                throw new Exception("You cannot enroll yourself as admin!");
+                throw new ForbiddenException("You cannot enroll yourself as admin!");
         }
 
         User u = d.toUser();
@@ -63,7 +66,7 @@ public class UserService {
         }
 
         else
-            throw new RuntimeException("Invalid Credentials");
+            throw new UnauthorizedException("Invalid Credentials");
     }
 
     public UserResponseDTO updateUser(Long id,UserRequestDTO d)
@@ -87,7 +90,7 @@ public class UserService {
             return UserResponseDTO.basicInfo(user);
         }
         else{
-            throw new RuntimeException("id not found");
+            throw new NotFoundException("User with id "+id+" not found!");
         }
     }
     public UserResponseDTO getUser(Long id)
@@ -102,7 +105,7 @@ public class UserService {
                 return UserResponseDTO.basicInfo(u.get());
         }
         else{
-            throw new RuntimeException("id not found");
+            throw new NotFoundException("User with id "+id+" not found!");
         }
     }
     public List<UserResponseDTO> getAllUsers()
@@ -110,6 +113,8 @@ public class UserService {
         List<User> l=repository.findAll();
         return l.stream().map(UserResponseDTO::basicInfo).toList();
     }
+
+
     public UserResponseDTO deleteUser(Long id)
     {
         Optional<User> u=repository.findById(id);
@@ -120,7 +125,7 @@ public class UserService {
             return d;
         }
         else{
-            throw new RuntimeException("ID not found");
+            throw new NotFoundException("User with id "+id+" not found!");
         }
     }
 }
