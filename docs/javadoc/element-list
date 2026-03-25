@@ -1,0 +1,8 @@
+com.team.hotelbooking
+com.team.hotelbooking.additional
+com.team.hotelbooking.controllers
+com.team.hotelbooking.dtos
+com.team.hotelbooking.entities
+com.team.hotelbooking.exceptions
+com.team.hotelbooking.repositories
+com.team.hotelbooking.services
