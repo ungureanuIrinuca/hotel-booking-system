@@ -6,6 +6,9 @@ import com.team.hotelbooking.dtos.BookingResponseDTO;
 import com.team.hotelbooking.entities.Booking;
 import com.team.hotelbooking.entities.Room;
 import com.team.hotelbooking.entities.User;
+import com.team.hotelbooking.exceptions.BadRequestException;
+import com.team.hotelbooking.exceptions.ConflictException;
+import com.team.hotelbooking.exceptions.NotFoundException;
 import com.team.hotelbooking.repositories.BookingRepository;
 import com.team.hotelbooking.repositories.RoomRepository;
 import com.team.hotelbooking.repositories.UserRepository;
@@ -41,7 +44,7 @@ public class BookingService {
         validateDates(startDate, endDate);
 
         if (!checkAvailability(roomId, startDate, endDate))
-            throw new IllegalArgumentException("Room with id " + roomId + " is not available.");
+            throw new ConflictException("Room with id " + roomId + " is not available.");
 
         User guest;
         guest = userRepository.findById(request.getGuestId()).orElseThrow();
@@ -89,7 +92,7 @@ public class BookingService {
     public void cancelBooking(Long id) {
 
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking with id " + id + " does not exist."));
+                .orElseThrow(() -> new NotFoundException("Booking with id " + id + " does not exist."));
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
@@ -128,10 +131,10 @@ public class BookingService {
 
     private void validateDates(LocalDate startDate, LocalDate endDate) {
         if (!startDate.isBefore(endDate))
-            throw new IllegalArgumentException("Invalid date interval.");
+            throw new BadRequestException("Invalid date interval.");
 
         if (startDate.isBefore(LocalDate.now()))
-            throw new IllegalArgumentException("Booking cannot start in the past.");
+            throw new BadRequestException("Booking cannot start in the past.");
     }
 
 }

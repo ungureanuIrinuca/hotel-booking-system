@@ -5,6 +5,9 @@ import com.team.hotelbooking.dtos.LoginRequestDTO;
 import com.team.hotelbooking.dtos.UserRequestDTO;
 import com.team.hotelbooking.dtos.UserResponseDTO;
 import com.team.hotelbooking.entities.User;
+import com.team.hotelbooking.exceptions.ForbiddenException;
+import com.team.hotelbooking.exceptions.NotFoundException;
+import com.team.hotelbooking.exceptions.UnauthorizedException;
 import com.team.hotelbooking.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -40,7 +43,7 @@ public class UserService {
         {
             Jwt loginToken = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!loginToken.getClaim("user_type").equals("ADMIN"))
-                throw new Exception("You cannot enroll yourself as admin!");
+                throw new ForbiddenException("You cannot enroll yourself as admin!");
         }
 
         User u = d.toUser();
@@ -67,7 +70,7 @@ public class UserService {
         }
 
         else
-            throw new RuntimeException("Invalid Credentials");
+            throw new UnauthorizedException("Invalid Credentials");
     }
     @PreAuthorize("@security.isAdmin() or @security.getAuthId()==#id")
     public UserResponseDTO updateUser(Long id,UserRequestDTO d) throws Exception {
@@ -96,7 +99,7 @@ public class UserService {
             return UserResponseDTO.basicInfo(user);
         }
         else{
-            throw new RuntimeException("id not found");
+            throw new NotFoundException("User with id "+id+" not found!");
         }
     }
     @PreAuthorize("@security.canSeeUser(#id)")
@@ -112,7 +115,7 @@ public class UserService {
                 return UserResponseDTO.basicInfo(u.get());
         }
         else{
-            throw new RuntimeException("id not found");
+            throw new NotFoundException("User with id "+id+" not found!");
         }
     }
     @PostFilter("@security.canSeeUser(filterObject.id())")
@@ -132,7 +135,7 @@ public class UserService {
             return d;
         }
         else{
-            throw new RuntimeException("ID not found");
+            throw new NotFoundException("User with id "+id+" not found!");
         }
     }
 }

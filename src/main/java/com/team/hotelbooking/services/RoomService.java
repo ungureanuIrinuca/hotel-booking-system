@@ -3,6 +3,7 @@ package com.team.hotelbooking.services;
 import com.team.hotelbooking.additional.RoomType;
 import com.team.hotelbooking.dtos.RoomDTO;
 import com.team.hotelbooking.entities.Room;
+import com.team.hotelbooking.exceptions.NotFoundException;
 import com.team.hotelbooking.repositories.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +30,7 @@ public class RoomService {
 
     public RoomDTO getRoomByID(Long id) {
         Room roomById = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Room with id " + id + " not found"));
         return RoomDTO.fromEntity(roomById);
 
     }
@@ -42,7 +43,7 @@ public class RoomService {
     @PreAuthorize("@security.ownsRoom(#id)")
     public void updateRoom(Long id, RoomDTO roomDTO) {
         Room RoomEntity = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Room with id " + id + " not found"));
 
         RoomEntity.setHost(roomDTO.Host());
         RoomEntity.setRoomNumber(roomDTO.roomNumber());
@@ -58,7 +59,7 @@ public class RoomService {
     @PreAuthorize("@security.ownsRoom(#id)")
     public void deleteRoom(Long id) {
         Room RoomById = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Room with id " + id + " not found"));
 
         roomRepository.delete(RoomById);
     }
